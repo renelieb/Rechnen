@@ -26,6 +26,8 @@ class RechnenViewController: NSViewController, NSWindowDelegate {
     @IBOutlet weak var resultTextField: NSTextField!
     @IBOutlet weak var weiterButton: NSButton!
     
+    var questionField: NSTextField?         // reference to operand1TextField, operand2 or resultTextField
+
     
     //--- view functions -----------------------------------------------------
     override func viewDidLoad() {
@@ -52,104 +54,88 @@ class RechnenViewController: NSViewController, NSWindowDelegate {
 
     // --- Übung -------------------------------------------------------------
     var übung: Übung = Übung()
-    var übungBeendet = false {
+
+    enum ÜbungStatus {case gestartet, beendet}
+    var übungStatus = ÜbungStatus.gestartet {
         didSet {
-            if übungBeendet {
-                übung.benötigteZeit = übungsDauerInSekunden
-                
+            print("didSet übungStatus: \(übungStatus)")
+            if übungStatus == ÜbungStatus.beendet {
                 self.performSegue(withIdentifier: "bewerten", sender: self)
             }
         }
     }
+
     
-
     // --- Aufgabe -----------------------------------------------------------
-    var questionField: NSTextField?
-    var rechnung: Rechnung? {
-        didSet {
-            switch rechnung!.questionTerm {
-            case 1:  questionField = operand1TextField
-            case 2:  questionField = operand2TextField
-            default: questionField = resultTextField
-            }
-        }
-    }
-
-    enum AufgabenStatus {case gestellt, beantwortet}
+    enum AufgabenStatus {case gestellt, beantwortet, bestätigt}
     var aufgabenStatus = AufgabenStatus.gestellt {
         didSet {
+            print("didSet aufgabenStatus: \(aufgabenStatus)")
+
             switch aufgabenStatus {
             case .gestellt:
-                aufgabenStart = übungsDauerInSekunden
+                //--- update Aufgaben Box -------------------------------------------------------
+                let rechnung = übung.neueAufgabe(start: übungsDauerInSekunden).rechnung
                 
-                rechnung = RechnungFabrik.sharedInstance.createRechnung()
-                gestellteAufgaben += 1
+                switch rechnung.questionTerm {
+                    case 1:  questionField = operand1TextField
+                    case 2:  questionField = operand2TextField
+                    default: questionField = resultTextField
+                }
                 
-                setTextField(textField: operand1TextField, value: rechnung!.operand1)
-                setTextField(textField: operand2TextField, value: rechnung!.operand2)
-                setTextField(textField: resultTextField,   value: rechnung!.result)
-                operationLabel.stringValue = (rechnung!.operation?.rawValue)!
+                setTextField(textField: operand1TextField, value: rechnung.operand1)
+                setTextField(textField: operand2TextField, value: rechnung.operand2)
+                setTextField(textField: resultTextField,   value: rechnung.result)
+                operationLabel.stringValue = (rechnung.operation?.rawValue)!
 
                 aufgabenBox.layer?.backgroundColor = nil
                 weiterButton.title = "Lösung"
                 
             case .beantwortet:
-                aufgabenEnde = übungsDauerInSekunden
+                //--- update Übungsstand Box ----------------------------------------------------
+                let answer:Int? = (questionField?.stringValue.characters.count)! > 0 ? questionField?.integerValue : nil
 
-                if rechnung!.questionValue == Int((questionField?.intValue)!) {
-                    richtigGelösteAufgaben += 1
+                if übung.aufgabeBeantworten(antwort: answer) {
+                    aufgabenBox.layer?.backgroundColor = CGColor(red: 0.8, green: 1.0, blue: 0.8, alpha: 0.5)
+                    richtigGelösteAufgabenLabel.integerValue = übung.anzahlRichtigGelösteAufgaben
+                    richtigGelösteAufgabenProgressIndicator.doubleValue = 100 * Double(übung.anzahlRichtigGelösteAufgaben)
+                        / Double(RechnenPreferences.sharedInstance.anzahlAufgaben)
                 }
                 else {
-                    falschGelösteAufgaben += 1
+                    aufgabenBox.layer?.backgroundColor = CGColor(red: 1.0, green: 0.8, blue: 0.8, alpha: 0.5)
+                    falschGelösteAufgabenLabel.integerValue = übung.anzahlFalschGelösteAufgaben
                 }
                 
+                //--- update Aufgaben Box -------------------------------------------------------
+                lösungsAnzeigeInSekunden = 0
+
                 questionField = nil
+                let rechnung = übung.letzteAufgabe?.rechnung
                 setTextField(textField: operand1TextField, value: rechnung!.operand1)
                 setTextField(textField: operand2TextField, value: rechnung!.operand2)
                 setTextField(textField: resultTextField,   value: rechnung!.result)
                 
                 weiterButton.title = "nächste Rechnung"
+                
+            case .bestätigt:
+                if (übung.aufgabeBestägigen(ende: übungsDauerInSekunden)) {
+                    übungStatus = ÜbungStatus.beendet
+                }
             }
         }
     }
-
-    var gestellteAufgaben = 0 {
-        didSet {
-            übung.append(rechnung: rechnung!)
-        }
-    }
-    var aufgabenStart = 0.0
-    var aufgabenEnde = 0.0
-    var richtigGelösteAufgaben = 0 {
-        didSet {
-            übung.letzteAufgabeGelöst(antwort: optionalIntegerValue(questionField), dauer: aufgabenEnde - aufgabenStart)
-
-            richtigGelösteAufgabenLabel.intValue = Int32(richtigGelösteAufgaben)
-            richtigGelösteAufgabenProgressIndicator.doubleValue = 100 * Double(richtigGelösteAufgaben)
-                / Double(RechnenPreferences.sharedInstance.anzahlAufgaben)
-            
-            lösungsAnzeigeInSekunden = 0
-            aufgabenBox.layer?.backgroundColor = CGColor(red: 0.8, green: 1.0, blue: 0.8, alpha: 0.5)
-            
-            übungBeendet = (richtigGelösteAufgaben == RechnenPreferences.sharedInstance.anzahlAufgaben)
-        }
-    }
-    var falschGelösteAufgaben: Int = 0 {
-        didSet {
-            übung.letzteAufgabeNichtGelöst(antwort: optionalIntegerValue(questionField), dauer: aufgabenEnde - aufgabenStart)
-
-            falschGelösteAufgabenLabel.integerValue = falschGelösteAufgaben
-            
-            lösungsAnzeigeInSekunden = 0
-            aufgabenBox.layer?.backgroundColor = CGColor(red: 1.0, green: 0.8, blue: 0.8, alpha: 0.5)
-        }
-    }
-
     
     @IBAction func weiterButtonPressed(_ sender: AnyObject) {
-        aufgabenStatus = (aufgabenStatus == AufgabenStatus.gestellt)
-            ? AufgabenStatus.beantwortet
-            : AufgabenStatus.gestellt
+        switch aufgabenStatus {
+        case .gestellt:
+            aufgabenStatus = .beantwortet
+        case .beantwortet:
+            aufgabenStatus = .bestätigt
+            aufgabenStatus = .gestellt
+        default:
+            print("Huch es ist ein Fehler aufgetreten")
+        }
+        print("weiterButtonPressed aufgabenStatus: \(aufgabenStatus)")
     }
     
     
@@ -178,29 +164,33 @@ class RechnenViewController: NSViewController, NSWindowDelegate {
     
     var übungsDauerInSekunden = 0.0 {
         didSet {
-            übungsDauerInSekunden = übungsDauerInSekunden.roundToDecimal(fractionDigits: 1)
-            
-            verbrauchteZeitLabel.stringValue = "\(übungsDauerInSekunden) sec"
-            verbrauchteZeitProgressIndicator.doubleValue = 100 * Double(übungsDauerInSekunden)
-                / Double(RechnenPreferences.sharedInstance.maximaleZeit)
-            
-            if (aufgabenStatus == AufgabenStatus.beantwortet) {
-                lösungsAnzeigeInSekunden += timeInterval
-            }
-            
-            if übungsDauerInSekunden >= Double(RechnenPreferences.sharedInstance.maximaleZeit) {
-                aufgabenEnde = übungsDauerInSekunden
-                übung.letzteAufgabeNichtGelöst(antwort: optionalIntegerValue(questionField), dauer: aufgabenEnde - aufgabenStart)
-                übungBeendet = true
-            }
+            print("übungsdauerInSekunden: \(übungsDauerInSekunden)")
+            if übungsDauerInSekunden > 0 {
+                übungsDauerInSekunden = übungsDauerInSekunden.roundToDecimal(fractionDigits: 1)
+                
+                verbrauchteZeitLabel.stringValue = "\(übungsDauerInSekunden) sec"
+                verbrauchteZeitProgressIndicator.doubleValue = 100 * Double(übungsDauerInSekunden)
+                    / Double(RechnenPreferences.sharedInstance.maximaleZeit)
+                
+                if (aufgabenStatus == AufgabenStatus.beantwortet) {
+                    lösungsAnzeigeInSekunden += timeInterval
+                }
 
+                if übungsDauerInSekunden >= Double(RechnenPreferences.sharedInstance.maximaleZeit) {
+                    if (übung.aufgabeBestägigen(ende: übungsDauerInSekunden)) {
+                        übungStatus = ÜbungStatus.beendet
+                    }
+                }
+            }
         }
     }
     
     let maximaleLösungsAnzeige = 0.5
     var lösungsAnzeigeInSekunden = 0.0 {
         didSet {
+            print("didSet lösungsAnzeiegeInSekunden aufgabenStatus: \(aufgabenStatus)")
             if (lösungsAnzeigeInSekunden >= maximaleLösungsAnzeige) {
+                aufgabenStatus = AufgabenStatus.bestätigt
                 aufgabenStatus = AufgabenStatus.gestellt
             }
         }

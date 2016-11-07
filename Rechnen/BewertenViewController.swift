@@ -22,6 +22,7 @@ class BewertenViewController: NSViewController, NSTableViewDataSource, NSTableVi
     var übung = Übung()
     let preferences = RechnenPreferences.sharedInstance
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -35,8 +36,8 @@ class BewertenViewController: NSViewController, NSTableViewDataSource, NSTableVi
         
         gestellteAufgabenLabel.stringValue = "Du hast \(übung.aufgaben.count) Aufgaben erhalten."
         benötigteZeitLabel.stringValue = "In \(übung.benötigteZeit) Sekunden hast du"
-        richtigGelöstLabel.stringValue = "\(übung.richtigGelösteAufgaben) Aufgaben richtig, und"
-        falschGelöstLabel.stringValue = "\(übung.falschGelösteAufgaben) Aufgaben nicht gelöst."
+        richtigGelöstLabel.stringValue = "\(übung.anzahlRichtigGelösteAufgaben) Aufgaben richtig, und"
+        falschGelöstLabel.stringValue = "\(übung.anzahlFalschGelösteAufgaben) Aufgaben nicht gelöst."
         mitteilungLabel.stringValue = "\(übungBestandenPrefix1), du hast die Übung \(übungBestandenPrefix2)bestanden!"
     }
     
@@ -65,7 +66,7 @@ class BewertenViewController: NSViewController, NSTableViewDataSource, NSTableVi
         }
         
         if tableColumn == tableView.tableColumns[0] {
-            return makeTableCell("AufgabeCellID", aufgabe.descriptionAufgabe)
+            return makeTableCell("AufgabeCellID", aufgabe.descriptionRechnung)
         } else if tableColumn == tableView.tableColumns[1] {
             return makeTableCell("LösungCellID", aufgabe.antwort == nil ? "" : String(aufgabe.antwort!))
         } else if tableColumn == tableView.tableColumns[2] {

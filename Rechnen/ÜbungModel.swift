@@ -11,31 +11,14 @@ import Foundation
 
 struct Übung: CustomStringConvertible {
     var aufgaben: [Aufgabe] = []
-    var benötigteZeit: Double = 0.0
-    
-    mutating func append(rechnung: Rechnung) {
-        aufgaben.append(Aufgabe(rechnung: rechnung))
-    }
+    var letzteAufgabe: Aufgabe? { get { return aufgaben.last } }
 
-    mutating func letzteAufgabeGelöst(antwort: Int?, dauer: Double) {
-        aufgaben[aufgaben.count-1].antwort = antwort
-        aufgaben[aufgaben.count-1].dauer = dauer
-        aufgaben[aufgaben.count-1].gelöst = true
-    }
-    
-    mutating func letzteAufgabeNichtGelöst(antwort: Int?, dauer: Double) {
-        aufgaben[aufgaben.count-1].antwort = antwort
-        aufgaben[aufgaben.count-1].dauer = dauer
-        aufgaben[aufgaben.count-1].gelöst = false
-    }
-    
-    var gestellteAufgaben: Int {
+    var anzahlGestellteAufgaben: Int {
         get {
             return aufgaben.count
         }
     }
-    
-    var richtigGelösteAufgaben: Int {
+    var anzahlRichtigGelösteAufgaben: Int {
         get {
             var result = 0
             for aufgabe in aufgaben {
@@ -44,8 +27,7 @@ struct Übung: CustomStringConvertible {
             return result
         }
     }
-    
-    var falschGelösteAufgaben: Int {
+    var anzahlFalschGelösteAufgaben: Int {
         get {
             var result = 0
             for aufgabe in aufgaben {
@@ -54,7 +36,7 @@ struct Übung: CustomStringConvertible {
             return result
         }
     }
-    
+    var benötigteZeit: Double = 0.0
     var bestanden: Bool {
         get {
             return benötigteZeit < Double(RechnenPreferences.sharedInstance.maximaleZeit)
@@ -62,45 +44,68 @@ struct Übung: CustomStringConvertible {
     }
 
     var description:String {
-        return "aufgaben: \(aufgaben) benötigteZeit: \(benötigteZeit) gestellteAufgaben: \(gestellteAufgaben) richtigGelösteAufgaben: \(richtigGelösteAufgaben) falschGelösteAufgaben: \(falschGelösteAufgaben) bestanden: \(bestanden)"
+        return "aufgaben: \(aufgaben) benötigteZeit: \(benötigteZeit) # gestellte Aufgaben: \(anzahlGestellteAufgaben) # richtig gelöste Aufgaben: \(anzahlRichtigGelösteAufgaben) # falsch gelöste Aufgaben: \(anzahlFalschGelösteAufgaben) bestanden: \(bestanden)"
     }
+    
+    mutating func neueAufgabe(start: Double) -> Aufgabe {
+        let rechnung = RechnungFabrik.sharedInstance.createRechnung()
+        let aufgabe = Aufgabe(rechnung: rechnung, start: start)
+        aufgaben.append(aufgabe)
+
+        return aufgabe
+    }
+    
+    mutating func aufgabeBeantworten(antwort: Int?) -> Bool {
+        print("übung.aufgabe.antwort: \(antwort)")
+        aufgaben[aufgaben.count-1].antwort = antwort
+        return aufgaben[aufgaben.count-1].gelöst
+    }
+
+    mutating func aufgabeBestägigen(ende: Double) -> Bool {
+        print("übung.aufgabe.ende: \(ende)")
+        aufgaben[aufgaben.count-1].aufgabenEnde = ende
+        benötigteZeit = ende
+
+        let beendet = (anzahlRichtigGelösteAufgaben == RechnenPreferences.sharedInstance.anzahlAufgaben || benötigteZeit >= Double(RechnenPreferences.sharedInstance.maximaleZeit))
+        print("beendet: \(beendet)")
+        return beendet
+    }
+
 }
 
 
 struct Aufgabe: CustomStringConvertible {
     var rechnung: Rechnung
     var antwort: Int?
-    var dauer: Double?
-    var gelöst: Bool = false
+    var aufgabenStart = 0.0
+    var aufgabenEnde = 0.0
+    var dauer: Double? {
+        get {
+            return aufgabenEnde - aufgabenStart
+        }
+    }
+    var gelöst: Bool {
+        get {
+            return antwort == rechnung.questionValue
+        }
+    }
     
-    init(rechnung: Rechnung) {
+    init(rechnung: Rechnung, start: Double) {
         self.rechnung = rechnung
+        self.aufgabenStart = start
     }
     
     var description:String {
-        return "aufgabe: \(descriptionAufgabe) antwort: \(antwort) dauer: \(dauer!) gelöst: \(gelöst)"
+        return "rechnung: \(descriptionRechnung) antwort: \(antwort) dauer: \(dauer) gelöst: \(gelöst)"
     }
     
-    var descriptionAufgabe: String {
+    var descriptionRechnung: String {
         var result = ""
         result += rechnung.questionTerm == 1 ? "?" : String(rechnung.operand1)
         result += " \((rechnung.operation?.rawValue)!) "
         result += rechnung.questionTerm == 2 ? "?" : String(rechnung.operand2)
         result += " = "
         result += rechnung.questionTerm == 3 ? "?" : String(rechnung.result)
-        return result
-    }
-
-    var descriptionLösung: String {
-        var result = ""
-        
-        let antwortString = antwort == nil ? "--" : String(antwort!)
-        result += rechnung.questionTerm == 1 ? antwortString : String(rechnung.operand1)
-        result += (rechnung.operation?.rawValue)!
-        result += rechnung.questionTerm == 2 ? antwortString : String(rechnung.operand2)
-        result += "="
-        result += rechnung.questionTerm == 3 ? antwortString : String(rechnung.result)
-        
         return result
     }
 
