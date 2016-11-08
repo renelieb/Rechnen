@@ -119,6 +119,7 @@ class RechnenViewController: NSViewController, NSWindowDelegate {
                 
             case .bestätigt:
                 if (übung.aufgabeBestägigen(ende: übungsDauerInSekunden)) {
+                    print("übung beendet")
                     übungStatus = ÜbungStatus.beendet
                 }
             }

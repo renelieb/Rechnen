@@ -9,31 +9,21 @@
 import Foundation
 
 
-struct Übung: CustomStringConvertible {
+class Übung: CustomStringConvertible {
     var aufgaben: [Aufgabe] = []
     var letzteAufgabe: Aufgabe? { get { return aufgaben.last } }
 
     var anzahlGestellteAufgaben: Int {
-        get {
-            return aufgaben.count
-        }
+        get { return aufgaben.count }
     }
     var anzahlRichtigGelösteAufgaben: Int {
         get {
-            var result = 0
-            for aufgabe in aufgaben {
-                if aufgabe.gelöst { result += 1 }
-            }
-            return result
+            return aufgaben.reduce(0, { $1.gelöst ? $0 + 1 : $0} )
         }
     }
     var anzahlFalschGelösteAufgaben: Int {
         get {
-            var result = 0
-            for aufgabe in aufgaben {
-                if !aufgabe.gelöst { result += 1 }
-            }
-            return result
+            return aufgaben.reduce(0, { $1.gelöst ? $0 : $0 + 1} )
         }
     }
     var benötigteZeit: Double = 0.0
@@ -47,7 +37,7 @@ struct Übung: CustomStringConvertible {
         return "aufgaben: \(aufgaben) benötigteZeit: \(benötigteZeit) # gestellte Aufgaben: \(anzahlGestellteAufgaben) # richtig gelöste Aufgaben: \(anzahlRichtigGelösteAufgaben) # falsch gelöste Aufgaben: \(anzahlFalschGelösteAufgaben) bestanden: \(bestanden)"
     }
     
-    mutating func neueAufgabe(start: Double) -> Aufgabe {
+    func neueAufgabe(start: Double) -> Aufgabe {
         let rechnung = RechnungFabrik.sharedInstance.createRechnung()
         let aufgabe = Aufgabe(rechnung: rechnung, start: start)
         aufgaben.append(aufgabe)
@@ -55,26 +45,22 @@ struct Übung: CustomStringConvertible {
         return aufgabe
     }
     
-    mutating func aufgabeBeantworten(antwort: Int?) -> Bool {
-        print("übung.aufgabe.antwort: \(antwort)")
+    func aufgabeBeantworten(antwort: Int?) -> Bool {
         aufgaben[aufgaben.count-1].antwort = antwort
         return aufgaben[aufgaben.count-1].gelöst
     }
 
-    mutating func aufgabeBestägigen(ende: Double) -> Bool {
-        print("übung.aufgabe.ende: \(ende)")
+    func aufgabeBestägigen(ende: Double) -> Bool {
         aufgaben[aufgaben.count-1].aufgabenEnde = ende
         benötigteZeit = ende
 
-        let beendet = (anzahlRichtigGelösteAufgaben == RechnenPreferences.sharedInstance.anzahlAufgaben || benötigteZeit >= Double(RechnenPreferences.sharedInstance.maximaleZeit))
-        print("beendet: \(beendet)")
-        return beendet
+        return anzahlRichtigGelösteAufgaben == RechnenPreferences.sharedInstance.anzahlAufgaben || benötigteZeit >= Double(RechnenPreferences.sharedInstance.maximaleZeit)
     }
 
 }
 
 
-struct Aufgabe: CustomStringConvertible {
+class Aufgabe: CustomStringConvertible {
     var rechnung: Rechnung
     var antwort: Int?
     var aufgabenStart = 0.0
@@ -100,13 +86,11 @@ struct Aufgabe: CustomStringConvertible {
     }
     
     var descriptionRechnung: String {
-        var result = ""
-        result += rechnung.questionTerm == 1 ? "?" : String(rechnung.operand1)
-        result += " \((rechnung.operation?.rawValue)!) "
-        result += rechnung.questionTerm == 2 ? "?" : String(rechnung.operand2)
-        result += " = "
-        result += rechnung.questionTerm == 3 ? "?" : String(rechnung.result)
-        return result
+        let operand1  = rechnung.questionTerm == 1 ? "?" : String(rechnung.operand1)
+        let operation = (rechnung.operation?.rawValue)!
+        let operand2  = rechnung.questionTerm == 2 ? "?" : String(rechnung.operand2)
+        let result    = rechnung.questionTerm == 3 ? "?" : String(rechnung.result)
+        return "\(operand1) \(operation) \(operand2) = \(result)"
     }
 
 }
