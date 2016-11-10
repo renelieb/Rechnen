@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		424AD91D1DC7E3EE00124CE8 /* DoubleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424AD91C1DC7E3EE00124CE8 /* DoubleExtension.swift */; };
 		426E981D1DC72C8400DA5EC2 /* StartenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426E981C1DC72C8400DA5EC2 /* StartenViewController.swift */; };
-		426E981F1DC7BCEB00DA5EC2 /* ÜbungModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426E981E1DC7BCEB00DA5EC2 /* ÜbungModel.swift */; };
+		426E981F1DC7BCEB00DA5EC2 /* Übung.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426E981E1DC7BCEB00DA5EC2 /* Übung.swift */; };
 		42B6C63D1DC1D31F00E34C6D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B6C63C1DC1D31F00E34C6D /* AppDelegate.swift */; };
 		42B6C63F1DC1D31F00E34C6D /* RechnenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B6C63E1DC1D31F00E34C6D /* RechnenViewController.swift */; };
 		42B6C6411DC1D31F00E34C6D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 42B6C6401DC1D31F00E34C6D /* Assets.xcassets */; };
@@ -19,7 +19,7 @@
 		42B6C6501DC1D51200E34C6D /* RechnenPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B6C64F1DC1D51200E34C6D /* RechnenPreferences.swift */; };
 		42B6C6541DC1D5A800E34C6D /* Rechnung.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B6C6531DC1D5A800E34C6D /* Rechnung.swift */; };
 		42B6C6561DC1D5AD00E34C6D /* RechnungFabrik.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B6C6551DC1D5AD00E34C6D /* RechnungFabrik.swift */; };
-		42E502C41DCB3F2400BCEC4A /* ÜbungTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42E502C31DCB3F2400BCEC4A /* ÜbungTimer.swift */; };
+		42E502C41DCB3F2400BCEC4A /* CustomTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42E502C31DCB3F2400BCEC4A /* CustomTimer.swift */; };
 		A793BA5C1DC4C8D3007A95A8 /* CustomSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A793BA5B1DC4C8D3007A95A8 /* CustomSegue.swift */; };
 		A793BA5E1DC4C8F9007A95A8 /* SlideLeftSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A793BA5D1DC4C8F9007A95A8 /* SlideLeftSegue.swift */; };
 		A793BA601DC4C911007A95A8 /* SlideRightSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A793BA5F1DC4C911007A95A8 /* SlideRightSegue.swift */; };
@@ -30,7 +30,7 @@
 /* Begin PBXFileReference section */
 		424AD91C1DC7E3EE00124CE8 /* DoubleExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DoubleExtension.swift; sourceTree = "<group>"; };
 		426E981C1DC72C8400DA5EC2 /* StartenViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartenViewController.swift; sourceTree = "<group>"; };
-		426E981E1DC7BCEB00DA5EC2 /* ÜbungModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ÜbungModel.swift"; sourceTree = "<group>"; };
+		426E981E1DC7BCEB00DA5EC2 /* Übung.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Übung.swift"; sourceTree = "<group>"; };
 		42B6C6391DC1D31F00E34C6D /* Rechnen.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rechnen.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		42B6C63C1DC1D31F00E34C6D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		42B6C63E1DC1D31F00E34C6D /* RechnenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RechnenViewController.swift; sourceTree = "<group>"; };
@@ -42,7 +42,7 @@
 		42B6C64F1DC1D51200E34C6D /* RechnenPreferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RechnenPreferences.swift; sourceTree = "<group>"; };
 		42B6C6531DC1D5A800E34C6D /* Rechnung.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rechnung.swift; sourceTree = "<group>"; };
 		42B6C6551DC1D5AD00E34C6D /* RechnungFabrik.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RechnungFabrik.swift; sourceTree = "<group>"; };
-		42E502C31DCB3F2400BCEC4A /* ÜbungTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ÜbungTimer.swift"; sourceTree = "<group>"; };
+		42E502C31DCB3F2400BCEC4A /* CustomTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomTimer.swift; sourceTree = "<group>"; };
 		A793BA5B1DC4C8D3007A95A8 /* CustomSegue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomSegue.swift; sourceTree = "<group>"; };
 		A793BA5D1DC4C8F9007A95A8 /* SlideLeftSegue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlideLeftSegue.swift; sourceTree = "<group>"; };
 		A793BA5F1DC4C911007A95A8 /* SlideRightSegue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlideRightSegue.swift; sourceTree = "<group>"; };
@@ -88,8 +88,8 @@
 				42B6C63E1DC1D31F00E34C6D /* RechnenViewController.swift */,
 				A7F9474B1DC335D800E7D286 /* BewertenViewController.swift */,
 				42B6C64D1DC1D42F00E34C6D /* EinstellungenViewController.swift */,
-				426E981E1DC7BCEB00DA5EC2 /* ÜbungModel.swift */,
-				42E502C31DCB3F2400BCEC4A /* ÜbungTimer.swift */,
+				426E981E1DC7BCEB00DA5EC2 /* Übung.swift */,
+				42E502C31DCB3F2400BCEC4A /* CustomTimer.swift */,
 				42B6C6551DC1D5AD00E34C6D /* RechnungFabrik.swift */,
 				42B6C6531DC1D5A800E34C6D /* Rechnung.swift */,
 				A793BA5B1DC4C8D3007A95A8 /* CustomSegue.swift */,
@@ -181,12 +181,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				424AD91D1DC7E3EE00124CE8 /* DoubleExtension.swift in Sources */,
-				426E981F1DC7BCEB00DA5EC2 /* ÜbungModel.swift in Sources */,
+				426E981F1DC7BCEB00DA5EC2 /* Übung.swift in Sources */,
 				A793BA601DC4C911007A95A8 /* SlideRightSegue.swift in Sources */,
 				42B6C6561DC1D5AD00E34C6D /* RechnungFabrik.swift in Sources */,
 				A793BA5E1DC4C8F9007A95A8 /* SlideLeftSegue.swift in Sources */,
 				42B6C6541DC1D5A800E34C6D /* Rechnung.swift in Sources */,
-				42E502C41DCB3F2400BCEC4A /* ÜbungTimer.swift in Sources */,
+				42E502C41DCB3F2400BCEC4A /* CustomTimer.swift in Sources */,
 				A7F947481DC335A600E7D286 /* ContainerViewController.swift in Sources */,
 				A793BA5C1DC4C8D3007A95A8 /* CustomSegue.swift in Sources */,
 				42B6C64E1DC1D42F00E34C6D /* EinstellungenViewController.swift in Sources */,

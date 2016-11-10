@@ -19,7 +19,7 @@ class BewertenViewController: NSViewController, NSTableViewDataSource, NSTableVi
     @IBOutlet weak var falschGelöstLabel: NSTextField!
     
     
-    var übung = Übung()
+    var übung: Übung?
     let preferences = RechnenPreferences.sharedInstance
     
     
@@ -31,21 +31,23 @@ class BewertenViewController: NSViewController, NSTableViewDataSource, NSTableVi
     }
     
     override func viewDidAppear() {
-        let übungBestandenPrefix1 = übung.bestanden ? "Gratuliere" : "Schade"
-        let übungBestandenPrefix2 = übung.bestanden ? "" : "nicht "
-        
-        gestellteAufgabenLabel.stringValue = "Du hast \(übung.aufgaben.count) Aufgaben erhalten."
-        benötigteZeitLabel.stringValue = "In \(übung.benötigteZeit) Sekunden hast du"
-        richtigGelöstLabel.stringValue = "\(übung.anzahlRichtigGelösteAufgaben) Aufgaben richtig, und"
-        falschGelöstLabel.stringValue = "\(übung.anzahlFalschGelösteAufgaben) Aufgaben nicht gelöst."
-        mitteilungLabel.stringValue = "\(übungBestandenPrefix1), du hast die Übung \(übungBestandenPrefix2)bestanden!"
+        if übung != nil {
+            let übungBestandenPrefix1 = (übung?.bestanden)! ? "Gratuliere" : "Schade"
+            let übungBestandenPrefix2 = (übung?.bestanden)! ? "" : "nicht "
+            
+            gestellteAufgabenLabel.stringValue = "Du hast \(übung!.aufgaben.count) Aufgaben erhalten."
+            benötigteZeitLabel.stringValue = "In \(übung!.benötigteZeit) Sekunden hast du"
+            richtigGelöstLabel.stringValue = "\(übung!.anzahlRichtigGelösteAufgaben) Aufgaben richtig, und"
+            falschGelöstLabel.stringValue = "\(übung!.anzahlFalschGelösteAufgaben) Aufgaben nicht gelöst."
+            mitteilungLabel.stringValue = "\(übungBestandenPrefix1), du hast die Übung \(übungBestandenPrefix2)bestanden!"
+        }
     }
     
     
     //--- Protocol: NSTableViewDataSource ------------------------------------------------
     
     func numberOfRows(in tableView: NSTableView) -> Int {
-        return übung.aufgaben.count
+        return (übung?.aufgaben.count)!
     }
     
     //--- Protocol: NSTableViewDelegate --------------------------------------------------
@@ -54,7 +56,7 @@ class BewertenViewController: NSViewController, NSTableViewDataSource, NSTableVi
     let nokColor = NSColor(red: 1.0, green: 0.8, blue: 0.8, alpha: 0.5)
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
-        let aufgabe:Aufgabe = übung.aufgaben[row]
+        let aufgabe:Aufgabe = (übung?.aufgaben[row])!
 
         func makeTableCell(_ cellIdentifier: String, _ text: String) -> NSTableCellView? {
             if let cell = tableView.make(withIdentifier: cellIdentifier, owner: self) as? NSTableCellView {
