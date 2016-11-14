@@ -9,55 +9,91 @@
 import Foundation
 
 
-class Übung {
-    
-    enum Status {case aufgabeGestellt, aufgabeBeantwortet, aufgabeBestätigt, übungBeendet}
+class Übung: CustomStringConvertible {
+
+    enum Status {case aufgabeGestellt, aufgabeBeantwortet, antwortBestätigt, übungBeendet}
     var status = Status.aufgabeGestellt
     
     var aufgaben: [Aufgabe] = []
-    
     var letzteAufgabe: Aufgabe?           { get { return aufgaben.last } }
     
     var anzahlGestellteAufgaben: Int      { get { return aufgaben.count } }
     var anzahlRichtigGelösteAufgaben: Int { get { return aufgaben.reduce(0, { $1.gelöst ? $0 + 1 : $0} ) } }
     var anzahlFalschGelösteAufgaben: Int  { get { return aufgaben.reduce(0, { $1.gelöst ? $0 : $0 + 1} ) } }
-    var benötigteZeit: Double             { get { return aufgaben.reduce(0, { $1.dauer != nil ? $0 + $1.dauer! : $0 } ) } }
-    var bestanden: Bool {
-        get {
-            return anzahlRichtigGelösteAufgaben == RechnenPreferences.sharedInstance.anzahlAufgaben
-                || benötigteZeit >= Double(RechnenPreferences.sharedInstance.maximaleZeit)
-        }
+    var dauer: Double                     { get { return aufgaben.reduce(0, { $1.dauer != nil ? $0 + $1.dauer! : $0 } ) } }
+
+    var bestanden: Bool                   { get { return anzahlRichtigGelösteAufgaben == RechnenPreferences.sharedInstance.anzahlAufgaben } }
+    var beendet: Bool                     { get { return bestanden || dauer >= Double(RechnenPreferences.sharedInstance.maximaleZeit) } }
+ 
+    var description:String {
+        return "aufgaben: \(aufgaben) # gestellte Aufgaben: \(anzahlGestellteAufgaben) # richtig gelöste Aufgaben: \(anzahlRichtigGelösteAufgaben) # falsch gelöste Aufgaben: \(anzahlFalschGelösteAufgaben) dauer: \(dauer) bestanden: \(bestanden)"
     }
     
-    var description:String {
-        return "aufgaben: \(aufgaben) # gestellte Aufgaben: \(anzahlGestellteAufgaben) # richtig gelöste Aufgaben: \(anzahlRichtigGelösteAufgaben) # falsch gelöste Aufgaben: \(anzahlFalschGelösteAufgaben) benötigteZeit: \(benötigteZeit) bestanden: \(bestanden)"
+    
+    // --- Timer für die Übungsdauer -----------------------------------------
+    var timer = CustomTimer(name: "ütimer", timeMaximum: Double(RechnenPreferences.sharedInstance.maximaleZeit))
+
+    init() {
+        timer.fortschrittCallback = timerAktualisiert
+        timer.endeCallback        = timerAbgelaufen
+        timer.start()
     }
     
 
-    func neueAufgabe(start: Double) {
+    // --- callback functions ------------------------------------------------
+    var fortschrittCallback: ((Double) -> ())?
+    var endeCallback: (() -> ())?
+
+    func timerAktualisiert(zeit: Double) {
+        fortschrittCallback?(zeit)
+    }
+
+    func timerAbgelaufen() {
+        if !beendet {
+            print("\n>>> übung.timerAbgelaufen: \(NSDate())")
+            antwortBestätigen()
+            
+            endeCallback?()
+        }
+    }
+    
+    
+    // --- model functions ---------------------------------------------------
+    
+    func neueAufgabe() {
+        print("übung.neueAufgabe")
+
         let rechnung = RechnungFabrik.sharedInstance.createRechnung()
-        let aufgabe = Aufgabe(rechnung: rechnung, start: start)
+        let aufgabe = Aufgabe(rechnung: rechnung, start: timer.time)
         aufgaben.append(aufgabe)
         status = Status.aufgabeGestellt
+        
     }
     
     func aufgabeBeantworten(antwort: Int?) {
+        print("übung.aufgabeBeantworten")
         aufgaben[aufgaben.count-1].antwort = antwort
         status = Status.aufgabeBeantwortet
     }
 
-    func aufgabeBestägigen(ende: Double) {
-        aufgaben[aufgaben.count-1].aufgabenEnde = ende
-        status = Status.aufgabeBestätigt
+    func antwortBestätigen() {
+        print("übung.antwortBestätigen")
+        aufgaben[aufgaben.count-1].aufgabenEnde = timer.time
         
-        //--- check, if übung is beendet
-        if benötigteZeit >= Double(RechnenPreferences.sharedInstance.maximaleZeit)
-        || anzahlRichtigGelösteAufgaben >= RechnenPreferences.sharedInstance.anzahlAufgaben {
-            beendeÜbungCallback?()
+        if (beendet) {
+            übungBeenden()
+        }
+        else {
+            print("übung.antwortBestätigen -> antwort bestätigt")
+            status = Status.antwortBestätigt
         }
     }
- 
-    var beendeÜbungCallback: (() -> ())?
+
+    func übungBeenden() {
+        print("übung.übungBeenden")
+        timer.stop()
+        status = Status.übungBeendet
+    }
 }
 
 

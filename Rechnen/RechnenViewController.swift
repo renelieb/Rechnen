@@ -29,34 +29,22 @@ class RechnenViewController: NSViewController, NSWindowDelegate {
     var questionField: NSTextField?         // reference to operand1TextField, operand2 or resultTextField
 
     
-    // --- Übung -------------------------------------------------------------
     var übung = Übung()
-    
-    // --- Timer -------------------------------------------------------------
-    var ütimer = CustomTimer()
-    var verbrauchteZeit = 0.0               // TODO kann möglicherweise weggelassen werden, da im üTimer abgefragt werden kann
-    var btimer = CustomTimer()
+    var antwortTimer = CustomTimer(name: "btimer", timeMaximum: 0.5) // Timer für automatische Bestätigung der Antworten
 
 
     //--- view functions -----------------------------------------------------
     
     override func viewDidLoad() {
         
-        //--- set übung
-        übung.beendeÜbungCallback = übungBeenden
-        übung.neueAufgabe(start: verbrauchteZeit)
-        updateUI_Aufgabe()
+        //--- set callback functions
+        übung.fortschrittCallback = übungsForschrittAktualisiert
+        übung.endeCallback = übungBeendet
         
-        //--- set timers
-        ütimer.name = "ütimer"
-        ütimer.fortschrittCallback = updateUI_Zeit
-        ütimer.endeCallback = übungBeenden
-        ütimer.timeMaximum = Double(RechnenPreferences.sharedInstance.maximaleZeit)
-        ütimer.start()
+        antwortTimer.endeCallback = antwortBestätigt
 
-        btimer.name = "btimer"
-        btimer.endeCallback = antwortBestätigen
-        btimer.timeMaximum = 0.5
+        übung.neueAufgabe()
+        updateUI_Aufgabe()
     }
     
     override func viewDidAppear() {
@@ -64,7 +52,7 @@ class RechnenViewController: NSViewController, NSWindowDelegate {
     }
 
     override func viewWillDisappear() {
-        ütimer.stop()
+        antwortTimer.stop()
     }
 
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
@@ -79,7 +67,7 @@ class RechnenViewController: NSViewController, NSWindowDelegate {
     //--- action functions ---------------------------------------------------
     
     @IBAction func weiterButtonPressed(_ sender: AnyObject) {
-        print("view.weiterButtonPressed: übung.status=\(übung.status)")
+        print("\n--> view.weiterButtonPressed: übung.status=\(übung.status) \(NSDate())")
         
         switch übung.status {
             case Übung.Status.aufgabeGestellt:      aufgabeBeantworten()
@@ -88,31 +76,54 @@ class RechnenViewController: NSViewController, NSWindowDelegate {
         }
     }
     
+    
+    //--- callback functions -------------------------------------------------
+    
+    func übungsForschrittAktualisiert(zeit: Double) {
+        updateUI_Zeit(zeit)
+    }
+
+    func antwortBestätigt() {
+        print("\n--> view.antwortBestätigt: übung.status=\(übung.status) \(NSDate())")
+        antwortBestätigen()
+    }
+    
+    func übungBeendet() {
+        print("\n--> view.übungBeendet: übung.status=\(übung.status) \(NSDate())")
+        übungVerlassen()
+    }
+    
+
     //--- functions ----------------------------------------------------------
     
     func aufgabeBeantworten() {
-        print("view.aufgabeBeantworten")
+        print("view.aufgabeBeantworten \(NSDate())")
 
         let answer:Int? = (questionField?.stringValue.characters.count)! > 0 ? questionField?.integerValue : nil
         übung.aufgabeBeantworten(antwort: answer)
         updateUI_Antwort()
+        updateUI_Stand()
         
-//        btimer.start()
+        antwortTimer.start()
     }
 
     func antwortBestätigen() {
-        print("view.antwortBestätigen")
+        print("view.antwortBestätigen \(NSDate())")
+        antwortTimer.stop()
 
-//        btimer.stop()
-
-        übung.aufgabeBestägigen(ende: verbrauchteZeit)
+        übung.antwortBestätigen()
         
-        übung.neueAufgabe(start: verbrauchteZeit)
-        updateUI_Aufgabe()
+        if übung.beendet {
+            übungVerlassen()
+        } else {
+            übung.neueAufgabe()
+            updateUI_Aufgabe()
+        }
     }
 
-    func übungBeenden() {
-        print("übungBeenden")
+    func übungVerlassen() {
+        print("view.übungVerlassen \(NSDate())")
+
         self.performSegue(withIdentifier: "bewerten", sender: self)
     }
     
@@ -120,7 +131,7 @@ class RechnenViewController: NSViewController, NSWindowDelegate {
     // --- update UI functions -----------------------------------------------
 
     func updateUI_Aufgabe() {
-        print("view.updateUI_Aufgabe")
+        print("view.updateUI_Aufgabe \(NSDate())")
         let rechnung = übung.letzteAufgabe!.rechnung
         
         switch rechnung.questionTerm {
@@ -139,22 +150,8 @@ class RechnenViewController: NSViewController, NSWindowDelegate {
     }
     
     func updateUI_Antwort() {
-        print("view.updateUI_Antwort")
+        print("view.updateUI_Antwort \(NSDate())")
         
-        //--- update Übungsstand Box ----------------------------------------------------
-        
-        if (übung.letzteAufgabe?.gelöst)! {
-            aufgabenBox.layer?.backgroundColor = CGColor(red: 0.8, green: 1.0, blue: 0.8, alpha: 0.5)
-            richtigGelösteAufgabenLabel.integerValue = übung.anzahlRichtigGelösteAufgaben
-            richtigGelösteAufgabenProgressIndicator.doubleValue = 100 * Double(übung.anzahlRichtigGelösteAufgaben)
-                / Double(RechnenPreferences.sharedInstance.anzahlAufgaben)
-        }
-        else {
-            aufgabenBox.layer?.backgroundColor = CGColor(red: 1.0, green: 0.8, blue: 0.8, alpha: 0.5)
-            falschGelösteAufgabenLabel.integerValue = übung.anzahlFalschGelösteAufgaben
-        }
-        
-        //--- update Aufgaben Box -------------------------------------------------------
         questionField = nil
         let rechnung = übung.letzteAufgabe?.rechnung
         setTextField(textField: operand1TextField, value: rechnung!.operand1)
@@ -163,11 +160,30 @@ class RechnenViewController: NSViewController, NSWindowDelegate {
         
         weiterButton.title = "nächste Rechnung"
     }
+
     
+    let okColor  = CGColor(red: 0.8, green: 1.0, blue: 0.8, alpha: 0.5)
+    let nokColor = CGColor(red: 1.0, green: 0.8, blue: 0.8, alpha: 0.5)
+
+    func updateUI_Stand() {
+        print("view.updateUI_Stand \(NSDate())")
+        
+        if (übung.letzteAufgabe?.gelöst)! {
+            aufgabenBox.layer?.backgroundColor = okColor
+            richtigGelösteAufgabenLabel.integerValue = übung.anzahlRichtigGelösteAufgaben
+            richtigGelösteAufgabenProgressIndicator.doubleValue = 100 * Double(übung.anzahlRichtigGelösteAufgaben)
+                / Double(RechnenPreferences.sharedInstance.anzahlAufgaben)
+        }
+        else {
+            aufgabenBox.layer?.backgroundColor = nokColor
+            falschGelösteAufgabenLabel.integerValue = übung.anzahlFalschGelösteAufgaben
+        }
+    }
+
     func updateUI_Zeit(_ zeit: Double) {
-        verbrauchteZeit = zeit.roundToDecimal(fractionDigits: 1)
-        verbrauchteZeitLabel.stringValue = "\(verbrauchteZeit) sec"
-        verbrauchteZeitProgressIndicator.doubleValue = 100 * zeit / Double(RechnenPreferences.sharedInstance.maximaleZeit)
+        let dauer = zeit.roundToDecimal(fractionDigits: 1)
+        verbrauchteZeitLabel.stringValue             = "\(dauer) sec"
+        verbrauchteZeitProgressIndicator.doubleValue = 100 * dauer / Double(RechnenPreferences.sharedInstance.maximaleZeit)
     }
 
     

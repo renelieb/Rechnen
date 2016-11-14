@@ -12,15 +12,22 @@ import Foundation
 class CustomTimer {
 
     private var timer = Timer()
+    private var name  = "timer"
     private var running = false
-    var name  = "timer"
     
-    let timeInterval = 0.1
+    private let timeInterval = 0.1
     var time         = 0.0
-    var timeMaximum  = 0.0
+    private var timeMaximum  = 0.0
+    
     
     var fortschrittCallback: ((Double) -> ())?
     var endeCallback:        (() -> ())?
+    
+    
+    init(name: String, timeMaximum: Double) {
+        self.name = name
+        self.timeMaximum = timeMaximum
+    }
     
     
     func start() {
@@ -31,11 +38,11 @@ class CustomTimer {
                                      selector: #selector(CustomTimer.update),
                                      userInfo: nil,
                                      repeats: true)
-        print("\(name).start")
+//        print("\(name).start")
     }
     
     func stop() {
-        print("\(name).stop running:\(running)")
+//        print("\(name).stop running:\(running)")
         if running {
             timer.invalidate()
             running = false
@@ -45,10 +52,12 @@ class CustomTimer {
     
     @objc private func update() {
         time += timeInterval
-        fortschrittCallback?(time)
         
         if time >= timeMaximum {
             stop()
+        }
+        else {
+            fortschrittCallback?(time)
         }
     }
     
