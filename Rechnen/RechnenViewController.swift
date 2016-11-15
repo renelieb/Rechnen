@@ -36,15 +36,12 @@ class RechnenViewController: NSViewController, NSWindowDelegate {
     //--- view functions -----------------------------------------------------
     
     override func viewDidLoad() {
-        
-        //--- set callback functions
         übung.fortschrittCallback = übungsForschrittAktualisiert
         übung.endeCallback = übungBeendet
         
         antwortTimer.endeCallback = antwortBestätigt
-
-        übung.neueAufgabe()
-        updateUI_Aufgabe()
+        
+        übungStarten()
     }
     
     override func viewDidAppear() {
@@ -67,13 +64,10 @@ class RechnenViewController: NSViewController, NSWindowDelegate {
     //--- action functions ---------------------------------------------------
     
     @IBAction func weiterButtonPressed(_ sender: AnyObject) {
-        print("\n--> view.weiterButtonPressed: übung.status=\(übung.status) \(NSDate())")
+        print("\n--> view.weiterButtonPressed: \(NSDate())")
         
-        switch übung.status {
-            case Übung.Status.aufgabeGestellt:      aufgabeBeantworten()
-            case Übung.Status.aufgabeBeantwortet:   antwortBestätigen()
-            default:                                print("*** holy shit")
-        }
+        if (übung.aufgabe?.beantwortet)! { antwortBestätigen() }
+        else                             { aufgabeBeantworten() }
     }
     
     
@@ -84,24 +78,32 @@ class RechnenViewController: NSViewController, NSWindowDelegate {
     }
 
     func antwortBestätigt() {
-        print("\n--> view.antwortBestätigt: übung.status=\(übung.status) \(NSDate())")
+        print("\n--> view.antwortBestätigt: \(NSDate())")
         antwortBestätigen()
     }
     
     func übungBeendet() {
-        print("\n--> view.übungBeendet: übung.status=\(übung.status) \(NSDate())")
+        print("\n--> view.übungBeendet: \(NSDate())")
         übungVerlassen()
     }
     
 
     //--- functions ----------------------------------------------------------
     
+    func übungStarten() {
+        print("view.übungStarten \(NSDate())")
+        
+        übung.neueAufgabe()
+        updateUI_Aufgabe()
+    }
+    
     func aufgabeBeantworten() {
         print("view.aufgabeBeantworten \(NSDate())")
 
         let answer:Int? = (questionField?.stringValue.characters.count)! > 0 ? questionField?.integerValue : nil
+        
         übung.aufgabeBeantworten(antwort: answer)
-        updateUI_Antwort()
+        updateUI_Aufgabe()
         updateUI_Stand()
         
         antwortTimer.start()
@@ -112,7 +114,6 @@ class RechnenViewController: NSViewController, NSWindowDelegate {
         antwortTimer.stop()
 
         übung.antwortBestätigen()
-        
         if übung.beendet {
             übungVerlassen()
         } else {
@@ -132,35 +133,30 @@ class RechnenViewController: NSViewController, NSWindowDelegate {
 
     func updateUI_Aufgabe() {
         print("view.updateUI_Aufgabe \(NSDate())")
-        let rechnung = übung.letzteAufgabe!.rechnung
-        
-        switch rechnung.questionTerm {
-        case 1:  questionField = operand1TextField
-        case 2:  questionField = operand2TextField
-        default: questionField = resultTextField
-        }
-        
-        setTextField(textField: operand1TextField, value: rechnung.operand1)
-        setTextField(textField: operand2TextField, value: rechnung.operand2)
-        setTextField(textField: resultTextField,   value: rechnung.result)
-        operationLabel.stringValue = (rechnung.operation?.rawValue)!
         
         aufgabenBox.layer?.backgroundColor = nil
-        weiterButton.title = "Lösung"
+
+        if übung.aufgabe != nil {
+            let rechnung = übung.aufgabe!.rechnung
+
+            questionField = nil
+            if übung.aufgabe!.gestellt {
+                switch rechnung.questionTerm {
+                case 1:  questionField = operand1TextField
+                case 2:  questionField = operand2TextField
+                default: questionField = resultTextField
+                }
+            }
+            
+            setTextField(textField: operand1TextField, value: rechnung.operand1)
+            setTextField(textField: operand2TextField, value: rechnung.operand2)
+            setTextField(textField: resultTextField,   value: rechnung.result)
+            operationLabel.stringValue = rechnung.operation.rawValue
+            
+            weiterButton.title = übung.aufgabe!.gestellt ? "Lösung" : "nächste Aufgabe"
+        }
     }
     
-    func updateUI_Antwort() {
-        print("view.updateUI_Antwort \(NSDate())")
-        
-        questionField = nil
-        let rechnung = übung.letzteAufgabe?.rechnung
-        setTextField(textField: operand1TextField, value: rechnung!.operand1)
-        setTextField(textField: operand2TextField, value: rechnung!.operand2)
-        setTextField(textField: resultTextField,   value: rechnung!.result)
-        
-        weiterButton.title = "nächste Rechnung"
-    }
-
     
     let okColor  = CGColor(red: 0.8, green: 1.0, blue: 0.8, alpha: 0.5)
     let nokColor = CGColor(red: 1.0, green: 0.8, blue: 0.8, alpha: 0.5)
@@ -168,7 +164,7 @@ class RechnenViewController: NSViewController, NSWindowDelegate {
     func updateUI_Stand() {
         print("view.updateUI_Stand \(NSDate())")
         
-        if (übung.letzteAufgabe?.gelöst)! {
+        if (übung.aufgabe?.gelöst)! {
             aufgabenBox.layer?.backgroundColor = okColor
             richtigGelösteAufgabenLabel.integerValue = übung.anzahlRichtigGelösteAufgaben
             richtigGelösteAufgabenProgressIndicator.doubleValue = 100 * Double(übung.anzahlRichtigGelösteAufgaben)

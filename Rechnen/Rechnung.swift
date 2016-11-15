@@ -18,7 +18,7 @@ class Rechnung: CustomStringConvertible {
         case Division = ":"
     }
 
-    var operation: Operation?
+    var operation: Operation
 
     var operand1: Int
     var operand2: Int
@@ -49,7 +49,33 @@ class Rechnung: CustomStringConvertible {
     }
     
     var description:String {
-        return "\(operand1) \(operation!.rawValue) \(operand2) = \(result)"
+        return "\(operand1) \(operation.rawValue) \(operand2) = \(result)"
     }
 
 }
+
+
+class RechnungFabrik {
+    
+    class func createRechnung() -> Rechnung {
+        RechnenPreferences.sharedInstance.loadDefaults()
+        
+        return Rechnung(value1:    randomOperand(operands: RechnenPreferences.sharedInstance.allOperands),
+                        value2:    randomOperand(operands: RechnenPreferences.sharedInstance.operands),
+                        operation: randomOperation(operations: RechnenPreferences.sharedInstance.operations))
+    }
+    
+    private class func randomOperand(operands: [Int]) -> Int {
+        let randomOperandPosition = Int(arc4random_uniform(UInt32(operands.count)))
+        
+        return operands[randomOperandPosition]
+    }
+    
+    private class func randomOperation(operations: [Rechnung.Operation]) -> Rechnung.Operation {
+        let randomOperandPosition = Int(arc4random_uniform(UInt32(operations.count)))
+        
+        return operations[randomOperandPosition]
+    }
+    
+}
+

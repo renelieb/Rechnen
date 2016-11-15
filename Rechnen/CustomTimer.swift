@@ -52,13 +52,8 @@ class CustomTimer {
     
     @objc private func update() {
         time += timeInterval
-        
-        if time >= timeMaximum {
-            stop()
-        }
-        else {
-            fortschrittCallback?(time)
-        }
+        if time < timeMaximum { fortschrittCallback?(time) }
+        else                  { stop() }
     }
     
 }
