@@ -31,13 +31,13 @@ class BewertenViewController: NSViewController, NSTableViewDataSource, NSTableVi
     
     override func viewDidAppear() {
         if übung != nil {
-            let übungBestandenPrefix1 = (übung?.bestanden)! ? "Gratuliere" : "Schade"
-            let übungBestandenPrefix2 = (übung?.bestanden)! ? "" : "nicht "
+            let übungBestandenPrefix1 = übung!.bestanden ? "Gratuliere" : "Schade"
+            let übungBestandenPrefix2 = übung!.bestanden ? "" : "nicht "
             
-            gestellteAufgabenLabel.stringValue = "Du hast \(übung!.aufgaben.count) Aufgaben erhalten."
-            benötigteZeitLabel.stringValue = "In \(übung!.dauer) Sekunden hast du"
-            richtigGelöstLabel.stringValue = "\(übung!.anzahlRichtigGelösteAufgaben) Aufgaben richtig gelöst"
-            falschGelöstLabel.stringValue = "\(übung!.anzahlFalschGelösteAufgaben) Aufgaben nicht gelöst"
+            gestellteAufgabenLabel.stringValue = "Du hast \(übung!.aufgaben.count) Aufgaben erhalten und"
+            benötigteZeitLabel.stringValue = übung!.bestanden ? "" : "in \(übung!.dauer) Sekunden"
+            richtigGelöstLabel.stringValue = übung!.bestanden ? "alle richtig gelöst" : "\(übung!.anzahlRichtigGelösteAufgaben) richtig gelöst"
+            falschGelöstLabel.stringValue  = übung!.bestanden ? "" : "\(übung!.anzahlFalschGelösteAufgaben) nicht gelöst"
             mitteilungLabel.stringValue = "\(übungBestandenPrefix1), du hast die Übung \(übungBestandenPrefix2)bestanden!"
         }
     }
