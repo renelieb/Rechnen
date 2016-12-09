@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		422CFFD61DDC3C8400E64D1E /* EinstellungenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 422CFFD51DDC3C8400E64D1E /* EinstellungenViewController.swift */; };
 		424AD91D1DC7E3EE00124CE8 /* DoubleExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 424AD91C1DC7E3EE00124CE8 /* DoubleExtension.swift */; };
 		426E981D1DC72C8400DA5EC2 /* StartenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426E981C1DC72C8400DA5EC2 /* StartenViewController.swift */; };
 		426E981F1DC7BCEB00DA5EC2 /* Übung.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426E981E1DC7BCEB00DA5EC2 /* Übung.swift */; };
@@ -15,7 +16,6 @@
 		42B6C6411DC1D31F00E34C6D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 42B6C6401DC1D31F00E34C6D /* Assets.xcassets */; };
 		42B6C6441DC1D31F00E34C6D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 42B6C6421DC1D31F00E34C6D /* Main.storyboard */; };
 		42B6C64C1DC1D39200E34C6D /* RechnenWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B6C64B1DC1D39200E34C6D /* RechnenWindowController.swift */; };
-		42B6C64E1DC1D42F00E34C6D /* EinstellungenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B6C64D1DC1D42F00E34C6D /* EinstellungenViewController.swift */; };
 		42B6C6501DC1D51200E34C6D /* RechnenPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B6C64F1DC1D51200E34C6D /* RechnenPreferences.swift */; };
 		42B6C6541DC1D5A800E34C6D /* Rechnung.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42B6C6531DC1D5A800E34C6D /* Rechnung.swift */; };
 		42E502C41DCB3F2400BCEC4A /* CustomTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42E502C31DCB3F2400BCEC4A /* CustomTimer.swift */; };
@@ -27,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		422CFFD51DDC3C8400E64D1E /* EinstellungenViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EinstellungenViewController.swift; sourceTree = "<group>"; };
 		424AD91C1DC7E3EE00124CE8 /* DoubleExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DoubleExtension.swift; sourceTree = "<group>"; };
 		426E981C1DC72C8400DA5EC2 /* StartenViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartenViewController.swift; sourceTree = "<group>"; };
 		426E981E1DC7BCEB00DA5EC2 /* Übung.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Übung.swift"; sourceTree = "<group>"; };
@@ -37,7 +38,6 @@
 		42B6C6431DC1D31F00E34C6D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		42B6C6451DC1D31F00E34C6D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		42B6C64B1DC1D39200E34C6D /* RechnenWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RechnenWindowController.swift; sourceTree = "<group>"; };
-		42B6C64D1DC1D42F00E34C6D /* EinstellungenViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EinstellungenViewController.swift; sourceTree = "<group>"; };
 		42B6C64F1DC1D51200E34C6D /* RechnenPreferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RechnenPreferences.swift; sourceTree = "<group>"; };
 		42B6C6531DC1D5A800E34C6D /* Rechnung.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rechnung.swift; sourceTree = "<group>"; };
 		42E502C31DCB3F2400BCEC4A /* CustomTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomTimer.swift; sourceTree = "<group>"; };
@@ -85,7 +85,7 @@
 				426E981C1DC72C8400DA5EC2 /* StartenViewController.swift */,
 				42B6C63E1DC1D31F00E34C6D /* RechnenViewController.swift */,
 				A7F9474B1DC335D800E7D286 /* BewertenViewController.swift */,
-				42B6C64D1DC1D42F00E34C6D /* EinstellungenViewController.swift */,
+				422CFFD51DDC3C8400E64D1E /* EinstellungenViewController.swift */,
 				426E981E1DC7BCEB00DA5EC2 /* Übung.swift */,
 				42B6C6531DC1D5A800E34C6D /* Rechnung.swift */,
 				42E502C31DCB3F2400BCEC4A /* CustomTimer.swift */,
@@ -180,12 +180,12 @@
 				424AD91D1DC7E3EE00124CE8 /* DoubleExtension.swift in Sources */,
 				426E981F1DC7BCEB00DA5EC2 /* Übung.swift in Sources */,
 				A793BA601DC4C911007A95A8 /* SlideRightSegue.swift in Sources */,
+				422CFFD61DDC3C8400E64D1E /* EinstellungenViewController.swift in Sources */,
 				A793BA5E1DC4C8F9007A95A8 /* SlideLeftSegue.swift in Sources */,
 				42B6C6541DC1D5A800E34C6D /* Rechnung.swift in Sources */,
 				42E502C41DCB3F2400BCEC4A /* CustomTimer.swift in Sources */,
 				A7F947481DC335A600E7D286 /* ContainerViewController.swift in Sources */,
 				A793BA5C1DC4C8D3007A95A8 /* CustomSegue.swift in Sources */,
-				42B6C64E1DC1D42F00E34C6D /* EinstellungenViewController.swift in Sources */,
 				42B6C6501DC1D51200E34C6D /* RechnenPreferences.swift in Sources */,
 				42B6C63F1DC1D31F00E34C6D /* RechnenViewController.swift in Sources */,
 				A7F9474C1DC335D800E7D286 /* BewertenViewController.swift in Sources */,
